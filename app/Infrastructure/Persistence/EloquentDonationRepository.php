@@ -5,6 +5,7 @@ use App\Models\Campaign;
 use App\Models\Donation as DonationModel;
 use App\Domain\Donation\Entities\Donation;
 use App\Domain\Donation\Repositories\DonationRepositoryInterface;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EloquentDonationRepository implements DonationRepositoryInterface
 {
@@ -46,27 +47,9 @@ class EloquentDonationRepository implements DonationRepositoryInterface
      */
     public function findByCampaignId(int $campaignId): array
     {
-        return DonationModel::with('campaign')
-            ->where('campaign_id', $campaignId)
+        return DonationModel::where('campaign_id', $campaignId)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function (DonationModel $donation) {
-                /** @var Campaign $campaign */
-                $campaign = $donation->campaign();
-                return [
-                    'id' => $donation->id,
-                    'amount' => $donation->amount,
-                    'currency' => $donation->currency,
-                    'employee_id' => $donation->employee_id,
-                    'status' => $donation->status,
-                    'campaign' => [
-                        'id' => $campaign->id,
-                        'title' => $campaign->title,
-                        'goal_amount' => $campaign->goal_amount,
-                    ],
-                ];
-            })
             ->toArray();
     }
-
 }

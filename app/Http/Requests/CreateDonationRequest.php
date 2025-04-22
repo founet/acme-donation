@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\ApiResponse;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateDonationRequest extends FormRequest
 {
@@ -17,7 +21,7 @@ class CreateDonationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -27,5 +31,16 @@ class CreateDonationRequest extends FormRequest
             'campaign_id' => 'required|exists:campaigns,id',
             'payment_source' => 'required|string',
         ];
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(
+            ApiResponse::error(
+                'Validation failed',
+                $validator->errors()->toArray(),
+                422
+            )
+        );
     }
 }

@@ -10,6 +10,7 @@ use App\Domain\Donation\Services\PaymentServiceInterface;
 use App\Domain\User\Entities\User;
 use App\Domain\Campaign\Repositories\CampaignRepositoryInterface;
 use Illuminate\Contracts\Events\Dispatcher;
+use Mockery\Expectation;
 use Mockery\MockInterface;
 
 
@@ -54,23 +55,25 @@ it('creates a donation for an active campaign', closure: function () {
         paymentSource: 'stripe'
     );
 
-    $campaignRepo
-        ->shouldReceive('findById')
-        ->once()
+    /** @var Expectation $expect0 **/
+    $expect0 = $campaignRepo->shouldReceive('findById');
+    $expect0->once()
         ->with($campaign->id)
         ->andReturn($campaign);
 
-    $paymentService
-        ->shouldReceive('charge')
-        ->once()
+    /** @var Expectation $expect1 **/
+    $expect1 = $paymentService->shouldReceive('charge');
+    $expect1->once()
         ->with($dto->amount, $dto->currency, $dto->paymentSource)
         ->andReturn(new PaymentResult(true));
 
-    $events->shouldReceive('dispatch')->once()->andReturnNull();
+    /** @var Expectation $expect2 **/
+    $expect2 = $events->shouldReceive('dispatch');
+        $expect2->once()->andReturnNull();
 
-    $donationRepo
-        ->shouldReceive('save')
-        ->once()
+    /** @var Expectation $expect3 **/
+    $expect3 = $donationRepo->shouldReceive('save');
+    $expect3->once()
         ->andReturnUsing(fn ($donation) => $donation);
 
     $result = $useCase->execute($dto);
@@ -112,9 +115,9 @@ it('throws if campaign has not started', function () {
         endDate: now()->addDays(10),
         id: 2,
     );
-
-    $campaignRepo
-        ->shouldReceive('findById')
+    /** @var Expectation $expectation **/
+    $expectation = $campaignRepo->shouldReceive('findById');
+    $expectation->once()
         ->once()
         ->with(2)
         ->andReturn($futureCampaign);
@@ -156,10 +159,9 @@ it('throws if campaign is already ended', function () {
         endDate: now()->subDay(),
         id: 3,
     );
-
-    $campaignRepo
-        ->shouldReceive('findById')
-        ->once()
+    /** @var Expectation $expectation **/
+    $expectation = $campaignRepo->shouldReceive('findById');
+    $expectation->once()
         ->with(3)
         ->andReturn($endedCampaign);
 

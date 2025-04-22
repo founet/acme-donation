@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\CampaignFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -14,9 +15,12 @@ use Illuminate\Support\Carbon;
  * @property int $creator_id
  * @property Carbon $start_date
  * @property Carbon $end_date
+ *
+ * @method static CampaignFactory factory(...$parameters)
  */
 class Campaign extends Model
 {
+    /** @use HasFactory<CampaignFactory> */
     use HasFactory;
     protected $fillable = ['title', 'description', 'goal_amount', 'creator_id', 'start_date', 'end_date'];
 

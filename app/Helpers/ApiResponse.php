@@ -6,7 +6,7 @@ use Illuminate\Http\JsonResponse;
 class ApiResponse
 {
     /**
-     * @param array|object|null $data
+     * @param array<object>|object|null $data
      * @param string $message
      * @param int $status
      * @return JsonResponse
@@ -22,7 +22,7 @@ class ApiResponse
 
     /**
      * @param string $message
-     * @param array|string|null $errors
+     * @param array<string>|string|null $errors
      * @param int $status
      * @return JsonResponse
      */

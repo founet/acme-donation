@@ -5,12 +5,9 @@ use App\Application\Campaign\DTOs\CreateCampaignDTO;
 use App\Domain\Campaign\Entities\Campaign;
 use App\Domain\Campaign\Repositories\CampaignRepositoryInterface;
 use App\Domain\User\Entities\User;
+use Mockery\Expectation;
 use Mockery\MockInterface;
 
-
-beforeEach(function () {
-
-});
 
 it('creates a campaign with valid data', function () {
     /** @var MockInterface&CampaignRepositoryInterface $repository */
@@ -27,9 +24,9 @@ it('creates a campaign with valid data', function () {
         creator: $creator
     );
 
-    $repository
-        ->shouldReceive('save')
-        ->once()
+    /** @var Expectation $expectation **/
+    $expectation = $repository->shouldReceive('save');
+    $expectation->once()
         ->with(Mockery::type(Campaign::class))
         ->andReturnUsing(fn ($campaign) => $campaign);
 

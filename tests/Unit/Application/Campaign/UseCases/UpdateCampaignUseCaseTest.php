@@ -5,6 +5,7 @@ use App\Application\Campaign\DTOs\UpdateCampaignDTO;
 use App\Domain\Campaign\Entities\Campaign;
 use App\Domain\Campaign\Repositories\CampaignRepositoryInterface;
 use App\Domain\User\Entities\User;
+use Mockery\Expectation;
 use Mockery\MockInterface;
 
 beforeEach(function () {
@@ -35,15 +36,15 @@ it('updates a campaign when valid and not started', function () {
         editor: $creator,
     );
 
-    $repository
-        ->shouldReceive('findById')
-        ->once()
+    /** @var Expectation $expect0 **/
+    $expect0 = $repository->shouldReceive('findById');
+    $expect0->once()
         ->with($dto->id)
         ->andReturn($campaign);
 
-    $repository
-        ->shouldReceive('update')
-        ->once()
+    /** @var Expectation $expect1 **/
+    $expect1 = $repository->shouldReceive('update');
+    $expect1->once()
         ->andReturnUsing(fn ($campaign) => $campaign);
 
 
@@ -77,8 +78,9 @@ it('throws if campaign already started and dates are being changed', function ()
         endDate: now()->addDays(10), // trying to modify
         editor: new User(2, 'owner@acme.test', 'employee'),
     );
-
-    $repository->allows('findById')->once()->andReturn($existing);
+    /** @var Expectation $expectation **/
+    $expectation = $repository->shouldReceive('findById');
+    $expectation->once()->andReturn($existing);
 
     $useCase->execute($dto);
 })->throws(DomainException::class, "Can't modify campaign dates once it has started.");
