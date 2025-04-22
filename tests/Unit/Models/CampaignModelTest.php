@@ -2,6 +2,7 @@
 
 use App\Models\Campaign;
 
+/** @phpstan-template TValue */
 it('returns correct status based on start and end dates', function () {
     $upcoming = Campaign::factory()->make([
         'start_date' => now()->addDay(),

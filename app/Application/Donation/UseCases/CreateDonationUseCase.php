@@ -7,13 +7,15 @@ use App\Domain\Donation\Repositories\DonationRepositoryInterface;
 use App\Domain\Donation\Entities\Donation;
 use App\Domain\Donation\Services\PaymentServiceInterface;
 use App\Events\DonationConfirmed;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class CreateDonationUseCase
 {
     public function __construct(
         private DonationRepositoryInterface $repository,
         private CampaignRepositoryInterface $campaignRepository,
-        private PaymentServiceInterface $payment
+        private PaymentServiceInterface $payment,
+        private Dispatcher $events,
     ) {}
 
     public function execute(CreateDonationDTO $dto): Donation
@@ -47,7 +49,7 @@ class CreateDonationUseCase
 
         $donation =  $this->repository->save($donation);
 
-        event(new DonationConfirmed($donation));
+        $this->events->dispatch(new DonationConfirmed($donation));
 
         return $donation;
     }

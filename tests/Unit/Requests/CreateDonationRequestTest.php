@@ -8,6 +8,7 @@ it('passes with valid donation data', function () {
         'campaign_id' => 1,
         'amount' => 100,
         'currency' => 'EUR',
+        'payment_source' => 'stripe'
     ];
 
     $request = new CreateDonationRequest();

@@ -13,7 +13,7 @@ class UpdateCampaignUseCase
     {
         $campaign = $this->repository->findById($dto->id);
 
-        if ($campaign->isStarted() && ($dto->startDate || $dto->endDate)) {
+        if ($campaign->isStarted() && $campaign->isTryingToChangeDates($dto->startDate, $dto->endDate)) {
             throw new \DomainException("Can't modify campaign dates once it has started.");
         }
 
@@ -22,13 +22,13 @@ class UpdateCampaignUseCase
         }
 
         $updatedCampaign = new Campaign(
-            $dto->title,
-            $dto->description,
-            $dto->goalAmount,
-            $dto->editor->id,
-            $dto->startDate,
-            $dto->endDate,
-            $dto->id
+            title: $dto->title,
+            description: $dto->description,
+            goalAmount: $dto->goalAmount,
+            creatorId: $dto->editor->id,
+            startDate: $dto->startDate,
+            endDate: $dto->endDate,
+            id: $dto->id
         );
 
         return $this->repository->update($updatedCampaign);

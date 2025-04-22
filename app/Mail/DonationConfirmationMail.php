@@ -8,7 +8,7 @@ class DonationConfirmationMail extends Mailable
 {
     public function __construct(public Donation $donation) {}
 
-    public function build()
+    public function build(): self
     {
         return $this->subject('Your Donation Confirmation')
             ->markdown('emails.donation.confirmation');

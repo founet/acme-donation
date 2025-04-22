@@ -1,6 +1,7 @@
 <?php
 namespace App\Domain\Campaign\Entities;
 
+use DateTimeInterface;
 
 class Campaign
 {
@@ -14,8 +15,19 @@ class Campaign
         public ?int $id = null
     ) {}
 
-    public function isStarted(): bool {
-        return $this->startDate <= now()->startOfDay();
+    public function isStarted(): bool
+    {
+        return now() >= $this->startDate;
+    }
+
+    public function isEnded(): bool
+    {
+        return now() > $this->endDate;
+    }
+
+    public function isTryingToChangeDates(DateTimeInterface $newStartDate, DateTimeInterface $newEndDate): bool
+    {
+        return $this->startDate != $newStartDate || $this->endDate != $newEndDate;
     }
 
     public function getStatus(): string {
@@ -27,8 +39,8 @@ class Campaign
         };
     }
 
-    public function canReceiveDonations(): bool {
+    public function canReceiveDonations(): bool
+    {
         return $this->getStatus() === 'active';
     }
-
 }

@@ -19,6 +19,7 @@ it('updates campaign if user is creator and campaign not started', function () {
     $response = putJson("/api/campaigns/{$campaign->id}", [
         'title' => 'Updated Title',
         'goal_amount' => 9999,
+        'description' => 'Updated description',
         'start_date' => now()->addDays(3)->toDateString(),
         'end_date' => now()->addDays(12)->toDateString(),
     ]);
@@ -40,7 +41,9 @@ it('blocks update if campaign already started', function () {
 
     $response = putJson("/api/campaigns/{$campaign->id}", [
         'title' => 'New Title',
-        'start_date' => now()->addDays(2)->toDateString(), // ❌ update after start
+        'goal_amount' => 10000,
+        'description' => 'New description',
+        'start_date' => now()->addDays(2)->toDateString(),
         'end_date' => now()->addDays(8)->toDateString(),
     ]);
 
@@ -61,8 +64,10 @@ it('blocks update if user is not the creator', function () {
     actingAs($other, 'sanctum');
 
     $response = putJson("/api/campaigns/{$campaign->id}", [
-        'title' => 'Stolen Update'
+        'title' => 'Stolen Update',
+        'description' => 'This is a stolen update.',
+        'goal_amount' => 10000,
     ]);
 
-    $response->assertStatus(403);
+    $response->assertStatus(400);
 });

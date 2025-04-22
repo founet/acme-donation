@@ -1,6 +1,7 @@
 <?php
 namespace App\Infrastructure\Persistence;
 
+use App\Models\Campaign;
 use App\Models\Donation as DonationModel;
 use App\Domain\Donation\Entities\Donation;
 use App\Domain\Donation\Repositories\DonationRepositoryInterface;
@@ -26,6 +27,11 @@ class EloquentDonationRepository implements DonationRepositoryInterface
             $model->id
         );
     }
+
+    /**
+     * @param int $userId
+     * @return Donation[]
+     */
     public function findByUserId(int $userId): array
     {
         return DonationModel::where('employee_id', $userId)
@@ -34,24 +40,29 @@ class EloquentDonationRepository implements DonationRepositoryInterface
             ->toArray();
     }
 
+    /**
+     * @param int $campaignId
+     * @return Donation[]
+     */
     public function findByCampaignId(int $campaignId): array
     {
         return DonationModel::with('campaign')
             ->where('campaign_id', $campaignId)
             ->orderBy('created_at', 'desc')
             ->get()
-            ->map(function ($donation) {
+            ->map(function (DonationModel $donation) {
+                /** @var Campaign $campaign */
+                $campaign = $donation->campaign();
                 return [
                     'id' => $donation->id,
                     'amount' => $donation->amount,
                     'currency' => $donation->currency,
                     'employee_id' => $donation->employee_id,
                     'status' => $donation->status,
-                    'created_at' => $donation->created_at,
                     'campaign' => [
-                        'id' => $donation->campaign->id,
-                        'title' => $donation->campaign->title,
-                        'goal_amount' => $donation->campaign->goal_amount,
+                        'id' => $campaign->id,
+                        'title' => $campaign->title,
+                        'goal_amount' => $campaign->goal_amount,
                     ],
                 ];
             })

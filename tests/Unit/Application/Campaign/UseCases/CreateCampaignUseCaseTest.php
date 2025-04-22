@@ -5,16 +5,19 @@ use App\Application\Campaign\DTOs\CreateCampaignDTO;
 use App\Domain\Campaign\Entities\Campaign;
 use App\Domain\Campaign\Repositories\CampaignRepositoryInterface;
 use App\Domain\User\Entities\User;
-use Illuminate\Support\Facades\Date;
+use Mockery\MockInterface;
 
-use function Pest\Laravel\mock;
+
+beforeEach(function () {
+
+});
 
 it('creates a campaign with valid data', function () {
-    $repo = mock(CampaignRepositoryInterface::class);
-    $useCase = new CreateCampaignUseCase($repo);
+    /** @var MockInterface&CampaignRepositoryInterface $repository */
+    $repository = Mockery::mock(CampaignRepositoryInterface::class);
+    $useCase = new CreateCampaignUseCase($repository);
 
     $creator = new User(1, 'jane@acme.test', 'employee');
-
     $dto = new CreateCampaignDTO(
         title: 'Save the Trees',
         description: 'Reforest the Amazon',
@@ -24,24 +27,23 @@ it('creates a campaign with valid data', function () {
         creator: $creator
     );
 
-    $repo->shouldReceive('create')
+    $repository
+        ->shouldReceive('save')
         ->once()
-        ->withArgs(function (Campaign $campaign) use ($dto) {
-            expect($campaign->title)->toBe($dto->title);
-            expect($campaign->goalAmount)->toBe($dto->goalAmount);
-            return true;
-        })
-        ->andReturnUsing(fn () => new Campaign(...get_object_vars($dto)));
+        ->with(Mockery::type(Campaign::class))
+        ->andReturnUsing(fn ($campaign) => $campaign);
 
     $result = $useCase->execute($dto);
 
     expect($result)->toBeInstanceOf(Campaign::class);
-    expect($result->title)->toBe('Save the Trees');
+    expect($result->title)->toBe('Save the Trees');;
+    expect($result->goalAmount)->toBe(10000);
 });
 
 it('throws if end date is before start date', function () {
-    $useCase = new CreateCampaignUseCase(mock(CampaignRepositoryInterface::class));
-
+    /** @var MockInterface&CampaignRepositoryInterface $repository */
+    $repository = Mockery::mock(CampaignRepositoryInterface::class);
+    $useCase = new CreateCampaignUseCase($repository);
     $dto = new CreateCampaignDTO(
         title: 'Bad Dates',
         description: 'Test',

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class SendDonationConfirmationEmail
 {
-    public function handle(DonationConfirmed $event)
+    public function handle(DonationConfirmed $event): void
     {
         $donorEmail = DB::table('users')->where('id', $event->donation->employeeId)->value('email');
 

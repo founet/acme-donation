@@ -2,11 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property string $description
+ * @property int $goal_amount
+ * @property int $creator_id
+ * @property Carbon $start_date
+ * @property Carbon $end_date
+ */
 class Campaign extends Model
 {
-    protected $fillable = ['title', 'description', 'goal_amount', 'creator_id'];
+    use HasFactory;
+    protected $fillable = ['title', 'description', 'goal_amount', 'creator_id', 'start_date', 'end_date'];
 
     protected $appends = ['status'];
 

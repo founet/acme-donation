@@ -5,36 +5,48 @@ use App\Application\Campaign\DTOs\UpdateCampaignDTO;
 use App\Domain\Campaign\Entities\Campaign;
 use App\Domain\Campaign\Repositories\CampaignRepositoryInterface;
 use App\Domain\User\Entities\User;
-use Illuminate\Support\Carbon;
+use Mockery\MockInterface;
 
-use function Pest\Laravel\mock;
+beforeEach(function () {
+
+});
 
 it('updates a campaign when valid and not started', function () {
-    $repo = mock(CampaignRepositoryInterface::class);
-    $useCase = new UpdateCampaignUseCase($repo);
-
-    $existing = new Campaign(
-        id: 1,
+    /** @var MockInterface&CampaignRepositoryInterface $repository */
+    $repository = Mockery::mock(CampaignRepositoryInterface::class);
+    $useCase = new UpdateCampaignUseCase($repository);
+    $creator = new User(1, 'alice@acme.test', 'employee');
+    $campaign = new Campaign(
         title: 'Old Title',
         description: 'Old Description',
         goalAmount: 1000,
+        creatorId: $creator->id,
         startDate: now()->addDays(2),
         endDate: now()->addDays(10),
-        creator: new User(1, 'alice@acme.test', 'employee')
+        id: 1,
     );
-
     $dto = new UpdateCampaignDTO(
         id: 1,
-        title: 'New Title',
-        description: 'New Desc',
-        goalAmount: 2000,
-        actor: new User(1, 'alice@acme.test', 'employee'),
-        startDate: now()->addDays(3),
-        endDate: now()->addDays(12),
+        title: 'Updated Title',
+        description: 'Updated Desc',
+        goalAmount: 1500,
+        startDate: now()->addDay(),
+        endDate: now()->addDays(10),
+        editor: $creator,
     );
 
-    $repo->shouldReceive('findById')->once()->with(1)->andReturn($existing);
-    $repo->shouldReceive('update')->once()->andReturn($existing);
+    $repository
+        ->shouldReceive('findById')
+        ->once()
+        ->with($dto->id)
+        ->andReturn($campaign);
+
+    $repository
+        ->shouldReceive('update')
+        ->once()
+        ->andReturnUsing(fn ($campaign) => $campaign);
+
+
 
     $updated = $useCase->execute($dto);
 
@@ -42,17 +54,18 @@ it('updates a campaign when valid and not started', function () {
 });
 
 it('throws if campaign already started and dates are being changed', function () {
-    $repo = mock(CampaignRepositoryInterface::class);
-    $useCase = new UpdateCampaignUseCase($repo);
-
+    /** @var MockInterface&CampaignRepositoryInterface $repository */
+    $repository = Mockery::mock(CampaignRepositoryInterface::class);
+    $useCase = new UpdateCampaignUseCase($repository);
+    $creator = new User(2, 'owner@acme.test', 'employee');
     $existing = new Campaign(
-        id: 1,
         title: 'Running Campaign',
         description: 'Live now',
         goalAmount: 5000,
+        creatorId: $creator->id,
         startDate: now()->subDay(), // already started
         endDate: now()->addDays(5),
-        creator: new User(2, 'owner@acme.test', 'employee')
+        id: 1,
     );
 
     $dto = new UpdateCampaignDTO(
@@ -60,12 +73,12 @@ it('throws if campaign already started and dates are being changed', function ()
         title: 'New Title',
         description: '...',
         goalAmount: 7000,
-        actor: new User(2, 'owner@acme.test', 'employee'),
-        startDate: now()->addDays(1), // trying to modify
-        endDate: now()->addDays(10),
+        startDate: now()->addDays(1),
+        endDate: now()->addDays(10), // trying to modify
+        editor: new User(2, 'owner@acme.test', 'employee'),
     );
 
-    $repo->shouldReceive('findById')->once()->with(1)->andReturn($existing);
+    $repository->allows('findById')->once()->andReturn($existing);
 
     $useCase->execute($dto);
 })->throws(DomainException::class, "Can't modify campaign dates once it has started.");

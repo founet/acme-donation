@@ -2,7 +2,6 @@
 
 use App\Models\Campaign;
 use App\Models\User;
-use Illuminate\Support\Carbon;
 use function Pest\Laravel\{actingAs, postJson};
 
 it('allows donation on active campaign', function () {
@@ -18,11 +17,12 @@ it('allows donation on active campaign', function () {
         'campaign_id' => $campaign->id,
         'amount' => 150,
         'currency' => 'EUR',
+        'payment_source' => 'stripe'
     ]);
 
     $response->assertStatus(200)
              ->assertJsonPath('data.amount', 150)
-             ->assertJsonPath('data.campaign_id', $campaign->id);
+             ->assertJsonPath('data.campaignId', $campaign->id);
 });
 
 it('rejects donation on upcoming campaign', function () {
@@ -38,6 +38,7 @@ it('rejects donation on upcoming campaign', function () {
         'campaign_id' => $campaign->id,
         'amount' => 100,
         'currency' => 'EUR',
+        'payment_source' => 'stripe'
     ]);
 
     $response->assertStatus(400)
@@ -57,6 +58,7 @@ it('rejects donation on ended campaign', function () {
         'campaign_id' => $campaign->id,
         'amount' => 50,
         'currency' => 'EUR',
+        'payment_source' => 'stripe'
     ]);
 
     $response->assertStatus(400)
@@ -64,15 +66,13 @@ it('rejects donation on ended campaign', function () {
 });
 
 it('blocks unauthenticated donation', function () {
-    $campaign = Campaign::factory()->create([
-        'start_date' => now()->subDay(),
-        'end_date' => now()->addDay(),
-    ]);
+    $campaign = Campaign::factory()->create();
 
     $response = postJson('/api/donations', [
         'campaign_id' => $campaign->id,
         'amount' => 99,
         'currency' => 'USD',
+        'payment_source' => 'stripe'
     ]);
 
     $response->assertStatus(401);

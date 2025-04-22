@@ -1,9 +1,17 @@
 <?php
 namespace App\Helpers;
 
+use Illuminate\Http\JsonResponse;
+
 class ApiResponse
 {
-    public static function success($data = null, $message = 'OK', $status = 200)
+    /**
+     * @param array|object|null $data
+     * @param string $message
+     * @param int $status
+     * @return JsonResponse
+     */
+    public static function success(array|object $data = null, string $message = 'OK', int $status = 200): JsonResponse
     {
         return response()->json([
             'success' => true,
@@ -12,7 +20,13 @@ class ApiResponse
         ], $status);
     }
 
-    public static function error($message = 'Error', $errors = null, $status = 400)
+    /**
+     * @param string $message
+     * @param array|string|null $errors
+     * @param int $status
+     * @return JsonResponse
+     */
+    public static function error(string $message = 'Error', array|string $errors = null, int $status = 400): JsonResponse
     {
         return response()->json([
             'success' => false,

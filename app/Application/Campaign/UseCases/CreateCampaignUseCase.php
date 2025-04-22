@@ -23,12 +23,12 @@ class CreateCampaignUseCase
         }
 
         $campaign = new Campaign(
-            $dto->title,
-            $dto->description,
-            $dto->goalAmount,
-            $dto->creator->id,
-            $dto->startDate,
-            $dto->endDate,
+            title: $dto->title,
+            description: $dto->description,
+            goalAmount: $dto->goalAmount,
+            creatorId: $dto->creator->id,
+            startDate: $dto->startDate,
+            endDate: $dto->endDate,
         );
 
         return $this->repository->save($campaign);

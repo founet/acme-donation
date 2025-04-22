@@ -10,5 +10,8 @@ interface CampaignRepositoryInterface
     public function findById(int $id): Campaign;
     public function update(Campaign $campaign): Campaign;
     public function delete(int $id): void;
+    /**
+     * @return Campaign[]
+     */
     public function all(): array;
 }
