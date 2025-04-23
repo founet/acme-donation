@@ -32,7 +32,7 @@ This project is structured following **Ports and Adapters (Hexagonal Architectur
 
 ```bash
 git clone git@github.com:founet/acme-donation.git
-cd your-project-directory
+cd acme-donation
 
 ```
 
@@ -44,7 +44,8 @@ The application will:
 
 - Install dependencies if not already installed.
 - Run fresh database migrations and seed data.
-- Start the Laravel server at [http://localhost:8008](http://localhost:8008)
+- Start the Laravel server at [http://localhost:9001](http://localhost:9001
+  )
 
 ## 📮 Endpoints
 
