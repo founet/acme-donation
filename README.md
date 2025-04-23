@@ -37,7 +37,7 @@ cd acme-donation
 ```
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 The application will:
