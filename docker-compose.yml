@@ -12,7 +12,7 @@ services:
     volumes:
       - ./:/var/www
     ports:
-      - "8008:8000"
+      - "9001:8000"
     depends_on:
       - db
     networks:

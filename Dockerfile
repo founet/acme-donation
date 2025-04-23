@@ -7,6 +7,7 @@ WORKDIR /var/www
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpng-dev libonig-dev libxml2-dev libpq-dev \
+    netcat-openbsd \
     && docker-php-ext-install pdo pdo_pgsql mbstring exif pcntl bcmath gd
 
 RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory-limit.ini

@@ -44,6 +44,8 @@ class DatabaseSeeder extends Seeder
             'description' => 'A fundraising campaign to plant 10,000 trees.',
             'goal_amount' => 10000,
             'creator_id' => $aliceId,
+            'start_date' => now()->subDays(30),
+            'end_date' => now()->subDays(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
