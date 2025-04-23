@@ -1,61 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌱 Laravel Donation Platform API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a backend API built with **Laravel** that powers a donation platform. It supports features like campaign creation, user donations, and role-based access, and follows a clean architecture style.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- User registration and login (via Sanctum).
+- Campaign management (create, update, delete).
+- Secure donation workflow with business rules:
+    - Donations only allowed on active campaigns.
+    - Role-based authorization.
+- API responses standardized through helper methods.
+- Containerized environment with Docker.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🧱 Architecture
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+This project is structured following **Ports and Adapters (Hexagonal Architecture)**:
 
-## Learning Laravel
+- **Domain Layer**: Pure business logic (entities, services).
+- **Application Layer**: Use cases and DTOs.
+- **Infrastructure Layer**: Persistence (Eloquent), external services.
+- **Interface Layer**: Controllers, HTTP requests/responses.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🐳 Getting Started with Docker
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Prerequisites
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Docker
+- Docker Compose
 
-## Laravel Sponsors
+### Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone git@github.com:founet/acme-donation.git
+cd your-project-directory
 
-### Premium Partners
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+docker-compose up -d --build
+```
 
-## Contributing
+The application will:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- Install dependencies if not already installed.
+- Run fresh database migrations and seed data.
+- Start the Laravel server at [http://localhost:8008](http://localhost:8008)
 
-## Code of Conduct
+## 📮 Endpoints
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 🔐 Authentication
 
-## Security Vulnerabilities
+To obtain a bearer token, log in with a seeded user:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```http
+POST /api/login
+Content-Type: application/json
 
-## License
+{
+  "email": "alice@acme.test",
+  "password": "password"
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This returns a `token` that should be used for all authenticated endpoints.
+
+### 💸 Donations
+
+Example:
+
+```http
+POST /api/donations
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "campaign_id": 1,
+  "amount": 50,
+  "currency": "EUR",
+  "payment_source": "stripe"
+}
+```
+
+## 🧪 Running Tests
+
+```bash
+docker exec -it <app-container-name> ./vendor/bin/pest
