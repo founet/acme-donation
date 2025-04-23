@@ -85,4 +85,10 @@ Content-Type: application/json
 ## 🧪 Running Tests
 
 ```bash
-docker exec -it <app-container-name> ./vendor/bin/pest
+docker exec -it <app-container-name> composer test
+```
+
+## 🧪 Static Analysis(phpstan)
+
+```bash
+docker exec -it <app-container-name> composer analyse
