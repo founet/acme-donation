@@ -14,6 +14,7 @@ This structure ensures the business rules remain testable, reusable, and decoupl
 - In production, I would have preferred using JWT with refresh tokens for secure session handling, token expiration, and logout support.
 - Only authenticated users can create or modify campaigns or donate.
 - Campaigns must have valid dates (`start ≥ today`, `end > start`) to be valid.
+- To support this flexibility, **payment processing was abstracted** behind a `PaymentServiceInterface`, which can be adapted later to use Stripe, PayPal, or another provider.
 
 # 📋 Business Rules Overview
 
